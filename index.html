@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Study Assistant</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fc;color:#17233b}
+header{background:#243b85;color:white;padding:25px;text-align:center}
+header h1{margin:0 0 8px}
+main{max-width:650px;margin:auto;padding:18px}
+.card{background:white;padding:20px;margin:15px 0;border-radius:14px;box-shadow:0 3px 12px #0001}
+button{background:#3156c8;color:white;border:0;padding:12px 18px;border-radius:9px;cursor:pointer;margin:5px}
+button:disabled{background:#aaa}
+.option{display:block;width:100%;text-align:left;background:#e8edfa;color:#17233b}
+#quiz{display:none}
+#feedback{font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+<h1>🎓 AI Study Assistant</h1>
+<p>Banking & SSC Exam Preparation</p>
+</header>
+<main>
+<div class="card">
+<h2>Welcome!</h2>
+<p>Practice questions and improve your exam preparation.</p>
+</div>
+<div class="card">
+<h2>Choose Your Subject</h2>
+<button onclick="start('Quant')">Quant</button>
+<button onclick="start('Reasoning')">Reasoning</button>
+<button onclick="start('English')">English</button>
+<button onclick="start('GK')">GK</button>
+</div>
+<div class="card" id="quiz">
+<h2 id="subject"></h2>
+<p id="question"></p>
+<div id="options"></div>
+<p id="feedback"></p>
+<p id="score"></p>
+<button id="next" onclick="nextQuestion()" disabled>Next Question</button>
+</div>
+</main>
+<script>
+const bank={
+Quant:[
+{q:"25% of 200 = ?",o:["25","50","75","100"],a:1},
+{q:"12 × 8 = ?",o:["86","94","96","108"],a:2}
+],
+Reasoning:[
+{q:"2, 4, 8, 16, ?",o:["20","24","32","36"],a:2},
+{q:"Odd one out?",o:["Apple","Mango","Carrot","Banana"],a:2}
+],
+English:[
+{q:"Choose the correct spelling.",o:["Recieve","Receive","Receeve","Receve"],a:1},
+{q:"Opposite of 'Hot'?",o:["Warm","Cold","Heat","Fire"],a:1}
+],
+GK:[
+{q:"Capital of Bihar?",o:["Gaya","Patna","Delhi","Ranchi"],a:1},
+{q:"RBI was established in?",o:["1935","1947","1950","1969"],a:0}
+]
+};
+let questions=[],index=0,marks=0,answered=false;
+function start(s){
+questions=bank[s];index=0;marks=0;
+document.getElementById("subject").textContent=s+" Quiz";
+document.getElementById("quiz").style.display="block";
+render();
+}
+function render(){
+answered=false;
+const q=questions[index];
+document.getElementById("question").textContent=(index+1)+". "+q.q;
+document.getElementById("feedback").textContent="";
+document.getElementById("score").textContent="Score: "+marks+"/"+questions.length;
+document.getElementById("next").disabled=true;
+const box=document.getElementById("options");
+box.innerHTML="";
+q.o.forEach((answer,i)=>{
+const b=document.createElement("button");
+b.className="option";
+b.textContent=answer;
+b.onclick=()=>check(i);
+box.appendChild(b);
+});
+}
+function check(choice){
+if(answered)return;
+answered=true;
+const q=questions[index];
+if(choice===q.a){
+marks++;
+document.getElementById("feedback").textContent="✅ Correct!";
+}else{
+document.getElementById("feedback").textContent="❌ Correct answer: "+q.o[q.a];
+}
+document.querySelectorAll(".option").forEach(b=>b.disabled=true);
+document.getElementById("score").textContent="Score: "+marks+"/"+questions.length;
+document.getElementById("next").disabled=false;
+}
+function nextQuestion(){
+index++;
+if(index>=questions.length){
+document.getElementById("question").textContent="Quiz completed!";
+document.getElementById("options").innerHTML="";
+document.getElementById("feedback").textContent="Final Score: "+marks+"/"+questions.length;
+document.getElementById("next").disabled=true;
+}else render();
+}
+</script>
+</body>
+</html>
